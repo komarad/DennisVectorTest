@@ -2,13 +2,15 @@ import mathematik.*;
 import teilchen.*;
 import teilchen.force.*;
 import teilchen.constraint.*;
+import teilchen.behavior.*;
 
 private ArrayList<Creature> agents = new ArrayList<Creature>(50);
 private final int numOfAgents = 50;
 private Physics physics;
 private Attractor mAttractor;
-private final float deflectorConfig = 0.7f;
+private final float deflectorConfig = 0.99f;
 private final int radius = 10;
+private Arrival arrival;
 
 void setup() {
   size(320, 240);
@@ -21,22 +23,31 @@ void setup() {
   mGravity.force().set(0, 30, 0);  
   //physics.add(mGravity);
 
+
+  
   /* create a viscous force that slows down all motion */
   ViscousDrag myDrag = new ViscousDrag();
   myDrag.coefficient = 4f;
   physics.add(myDrag);
 
+ arrival = new Arrival();
+ 
   for(int i = 0; i < numOfAgents; i++) {
     CircleCreature creature = new CircleCreature((int)random(width), (int)random(height), radius);
     agents.add(creature);
     physics.add(creature);
+   
+    arrival.breakforce(creature.maximumInnerForce() * 0.25f);
+    arrival.breakradius(creature.maximumInnerForce() * 0.25f);
+    creature.behaviors().add(arrival);  
   }
 
   /* create an attractor */
-  mAttractor = new Attractor();
+  /*mAttractor = new Attractor();
   mAttractor.radius(500);
   mAttractor.strength(150);
-  physics.add(mAttractor);
+  physics.add(mAttractor);*/
+
 
   /* create a deflector and add it to the particle system.
    * the that defines the deflection area is defined by an
@@ -81,9 +92,9 @@ void setup() {
 
 void mousePressed() {  
   /* flip the direction of the attractors strength. */
-  float myInvertedStrength = -1 * mAttractor.strength();
+  //float myInvertedStrength = -1 * mAttractor.strength();
   /* a negative strength turns the attractor into a repulsor */
-  mAttractor.strength(myInvertedStrength);
+  //mAttractor.strength(myInvertedStrength);
 }
 
 void draw() {
@@ -91,7 +102,7 @@ void draw() {
   physics.step(1.0 / frameRate);
  
   /* set attractor to mouse position */
-  mAttractor.position().set(mouseX, mouseY);
+  //mAttractor.position().set(mouseX, mouseY);
 
   background(23, 68, 250);
   stroke(255);
@@ -102,7 +113,7 @@ void draw() {
   }
 
   /* draw attractor. green if it is attracting and red if it is repelling */
-  noStroke();
+  /*noStroke();
   if (mAttractor.strength() < 0) {
     fill(255, 0, 0, 50);
   } 
@@ -110,6 +121,17 @@ void draw() {
     fill(0, 255, 0, 50);
   }
   ellipse(mAttractor.position().x, mAttractor.position().y,
-  mAttractor.radius(), mAttractor.radius());
-
+  mAttractor.radius(), mAttractor.radius());*/
+  
+    arrival.position().set(mouseX, mouseY);
+    if(arrival.arrived()) {
+      stroke(0, 255, 0);
+      fill(0, 255, 0, 30);
+    } else {
+      stroke(255, 0, 189);
+      fill(255, 0, 189, 30);
+    }
+  
+    ellipse(arrival.position().x, arrival.position().y,
+    arrival.breakradius() * 2, arrival.breakradius() * 2);
 }
