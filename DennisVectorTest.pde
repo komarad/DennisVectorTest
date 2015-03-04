@@ -1,21 +1,30 @@
 import mathematik.*;
+<<<<<<< HEAD
 import teilchen.*;
 import teilchen.force.*;
 import teilchen.constraint.*;
 import teilchen.behavior.*;
+=======
+>>>>>>> parent of e4c06ea... Now Physics is Implemented
 
-private ArrayList<Creature> agents = new ArrayList<Creature>(50);
+private Timer myTimer;
+private ArrayList<Agent> agents = new ArrayList<Agent>(50);
 private final int numOfAgents = 50;
+<<<<<<< HEAD
 private Physics physics;
 private Attractor mAttractor;
 private final float deflectorConfig = 0.99f;
 private final int radius = 10;
 private Arrival arrival;
+=======
+private Physics physics = new Physics();
+>>>>>>> parent of e4c06ea... Now Physics is Implemented
 
 void setup() {
   size(320, 240);
   smooth();
   noFill();
+<<<<<<< HEAD
   
   physics = new Physics();
   
@@ -134,4 +143,32 @@ void draw() {
   
     ellipse(arrival.position().x, arrival.position().y,
     arrival.breakradius() * 2, arrival.breakradius() * 2);
+=======
+  ellipseMode(CENTER);
+  myTimer = new Timer();
+  for(int i = 0; i < numOfAgents; i++) {
+    agents.add(new Agent());
+  }
+}
+
+void mousePressed() {
+  for(int i = 0; i < numOfAgents; i++) {
+    agents.get(i).setToPlace(random(320), random(240), 100);
+  }
+  Boolean b = new Boolean(true);
+  Boolean c = new Boolean(false);
+
+}
+
+void draw() {
+  background(255);
+  
+  for(int i = 0; i < agents.size(); i++) {
+    Agent a = agents.get(i);
+    a.goToMouse();
+    a.loop(myTimer.getDeltaTime());
+    a.draw();
+  }
+  myTimer.loop();
+>>>>>>> parent of e4c06ea... Now Physics is Implemented
 }
